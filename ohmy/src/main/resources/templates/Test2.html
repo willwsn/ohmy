@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Search Results</title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<form id="form101" action="#" th:action="@{/test/search}" th:object=${form101}
+		method="post">
+		<div class="form-group">
+			<label for="searchText">Search Text:</label> <input type="text"
+				th:field=*{searchText} class="form-control">
+		</div>
+		<div class="form-group">
+			<label for="searchType">Search Type:</label> <select
+				class="form-control" th:field=*{searchType}>
+				<option th:each=" option
+				: ${searchTypes}" th:value="${option}"
+					th:text="${option}" th:selected="*{searchType}==${option}"></option>
+			</select>
+		</div>
+		<button type="submit" class="btn btn-primary">Search</button>
+		<button class="btn btn-primary" id="myajax">SearchAjax</button>
+	</form>
+	<br>
+	<button class="btn btn-primary" id="btnDivide" >Divide</button>
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th scope="col">Column 1</th>
+				<th scope="col">Column 2</th>
+			</tr>
+		</thead>
+		<tbody th:unless="${searchResults == null}">
+			<tr th:each="result ,rowStat : ${searchResults}"
+				th:switch="${result.col1}">
+				<td th:case="''"><select class="form-control dynamic-pulldown"
+					th:name="'selectedValue_' + ${rowStat.index}"
+					th:id="'selectedId_' + ${rowStat.index}">
+						<option value=""></option>
+						<option th:each="option : ${searchTypes}" th:value="${option}"
+							th:text="${option}"></option>
+				</select></td>
+				<td th:case="*" th:text="${result.col1}"></td>
+				<td th:text="${result.col2}"></td>
+			</tr>
+		</tbody>
+		<tbody th:if="${searchResults == null}">
+			<tr>
+				<td colspan="2">No search results found.</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	 <script th:inline="javascript">
+        $(document).ready(function() {
+        	$('#myajax').click(function(event) {
+                event.preventDefault();
+                // Send AJAX request to search endpoint
+                let formData = $("#form101");
+                
+                $.ajax({
+                    url: '/test/ajaxtest',
+                    type: 'POST',
+                    data: formData.serialize(),
+                    success: function(data) {
+                       alert("success");
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                    	alert("error");
+                    }
+                });
+                
+                });
+
+            $('#btnDivide').click(function(event) {
+                event.preventDefault();
+                let aList=[[searchResults]];
+                let sendList=[];
+                
+
+                let pList=$('.dynamic-pulldown');
+                if(pList){
+                	 pList.each(function(index, element) {
+                		 if (element.value !== "") { // Check if selected
+                			 console.log(element);
+                			 console.log(element.value);
+                			 console.log(element.text);
+                			 console.log($(this).val());
+                		 
+                		 let selectedValue=element.value;
+                		 let id=element.id;
+                			 let dataObj={
+                             		selectedValue,
+                             		id
+                             };
+                			 sendList.push(dataObj);
+                         }
+                         
+                       });                	
+                }
+               
+
+                // Send AJAX request to search endpoint
+                $.ajax({
+                    url: '/test/divide',
+                    type: 'POST',
+                    data: { sendList },
+                    success: function(data) {
+                       alert("success");
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                    	alert("error");
+                    }
+                });
+            });
+        });
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Table with Pulldowns</title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script
+	src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script
+	src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+</head>
+<body>
+	<table id="myTable" class="table table-striped table-bordered">
+		<thead>
+			<tr>
+				<th>Select</th>
+				<th>Column 2</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="item, rowStat : ${items}">
+				<td><select class="form-control"
+					th:name="'selectedValue_' + ${rowStat.index}"
+					th:id="'selectedId_' + ${rowStat.index}">
+						<option value=""></option>
+						<option th:each="option : ${options}" th:value="${option}"
+							th:text="${option}"></option>
+				</select></td>
+				<td th:text="${item}"></td>
+			</tr>
+		</tbody>
+	</table>
+	<button id="sendButton" type="button" class="btn btn-primary">Send</button>
+</body>
+
+
+<script>
+	$(document)
+			.ready(
+					function() {
+						$('#myTable').DataTable({
+						// DataTable configuration options
+						});
+
+						$('#sendButton')
+								.click(
+										function() {
+											var selectedRows = $('#myTable')
+													.DataTable().rows({
+														selected : true
+													}).data();
+
+											var dataToSend = [];
+
+											$
+													.each(
+															selectedRows,
+															function(index, row) {
+																if (row[0] !== "") { // Check if first column is selected
+																	let selectedId = "selectedValue_"
+																			+ index;
+																	dataToSend
+																			.push({
+																				// Map data as needed for server-side processing,
+																				// ensuring unique identification of rows using names/indexes
+
+																				selectedValue : $(document
+																						.getElementById(selectedId)).value,
+																				value2 : row[1],
+																				rowId : index
+																			// Or a unique identifier from your model
+																			});
+																}
+															});
+
+											// Send the filtered data to the server using AJAX
+											$
+													.ajax({
+														url : '/your-server-endpoint',
+														type : 'POST',
+														data : JSON
+																.stringify(dataToSend),
+														contentType : 'application/json',
+													// ...
+													});
+										});
+					});
+</script>
+
+</html>

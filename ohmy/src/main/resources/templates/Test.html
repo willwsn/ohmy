@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Results</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <form th:action="@{/test/search}"  id ="form101" method="post">
+        <div class="form-group">
+            <label for="searchText">Search Text:</label>
+            <input type="text" class="form-control" id="searchText" name="searchText">
+        </div>
+        <div class="form-group">
+            <label for="searchType">Search Type:</label>
+            <select class="form-control" id="searchType" name="searchType">
+                <option th:each="option : ${searchTypes}" th:value="${option}" th:text="${option}"></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    <br>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Column 1</th>
+                <th scope="col">Column 2</th>
+                </tr>
+        </thead>
+        <tbody th:unless="${searchResults == null}">
+            <tr th:each="result : ${searchResults}">
+                <td th:text="${result.col1}"></td>
+                <td th:text="${result.col2}"></td>
+                </tr>
+        </tbody>
+        <tbody th:if="${searchResults == null}">
+            <tr>
+                <td colspan="2">No search results found.</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
