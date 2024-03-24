@@ -4,10 +4,11 @@
 <title>Search Results</title>
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+	src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
 </head>
 <body>
 	<form id="form101" action="#" th:action="@{/test/search}" th:object=${form101}
@@ -29,11 +30,13 @@
 	</form>
 	<br>
 	<button class="btn btn-primary" id="btnDivide" >Divide</button>
-	<table class="table table-striped">
+	<button class="btn btn-primary" id="btnTable" >tableTest</button>
+	<table id="wowTable"_class="table table-striped">
 		<thead>
 			<tr>
 				<th scope="col">Column 1</th>
 				<th scope="col">Column 2</th>
+				<th scope="col">Column 3</th>
 			</tr>
 		</thead>
 		<tbody th:unless="${searchResults == null}">
@@ -48,17 +51,54 @@
 				</select></td>
 				<td th:case="*" th:text="${result.col1}"></td>
 				<td th:text="${result.col2}"></td>
+				<td th:text="${result.col3}"></td>
 			</tr>
 		</tbody>
 		<tbody th:if="${searchResults == null}">
 			<tr>
-				<td colspan="2">No search results found.</td>
+				<td colspan="3">No search results found.</td>
 			</tr>
 		</tbody>
 	</table>
 	
 	 <script th:inline="javascript">
+	 /*<![CDATA[*/
         $(document).ready(function() {
+        	var wTable=$('#wowTable').DataTable({
+        		info: false,
+        	    ordering: false,
+        	    paging: false,
+        	    searhing:false,
+        		scrollX: true,
+        	    scrollY: 200
+				});
+        	
+        	$('#btnTable').click(function(event) {
+                event.preventDefault();
+                // Send AJAX request to search endpoint
+                var rows = wTable.rows(0).data();
+                console.log(rows);
+                console.log(rows[0]);
+                let kkk=/*[[${searchTypes}]]*/
+                console.log (kkk);
+               
+                
+                $.ajax({
+                    url: '/test/ajaxtest',
+                    type: 'POST',
+                    data: rows,
+                    success: function(data) {
+                       
+                       console.log(data);
+                       alert("success");
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                    	alert("error");
+                    }
+                });
+                
+             });
+        	
         	$('#myajax').click(function(event) {
                 event.preventDefault();
                 // Send AJAX request to search endpoint
@@ -69,6 +109,8 @@
                     type: 'POST',
                     data: formData.serialize(),
                     success: function(data) {
+                       
+                       console.log(data);
                        alert("success");
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
@@ -120,7 +162,7 @@
                 });
             });
         });
-
+        /*]]>*/
     </script>
 
 </body>

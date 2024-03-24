@@ -1,5 +1,6 @@
 package com.example.ohmy;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class testController {
@@ -48,14 +50,17 @@ public class testController {
 		String now = new Date().toString();
 		r1.col1 = "";
 		r1.col2 = a.searchType + now;
+		r1.col3 = LocalDateTime.now();
 		SearchResult r2 = new SearchResult();
 
 		r2.col1 = "";
 		r2.col2 = "bbbbb" + now;
+		r2.col3 = LocalDateTime.now();
 		SearchResult r3 = new SearchResult();
 
 		r3.col1 = "33333" + now;
 		r3.col2 = "ccccc" + now;
+		r3.col3 = LocalDateTime.now();
 
 		List<SearchResult> results = new ArrayList<>();
 		results.add(r1);
@@ -74,19 +79,23 @@ public class testController {
 	}
 
 	@PostMapping("test/ajaxtest")
-	public String ajtest(@ModelAttribute Form101 a, Model model) {
+	public @ResponseBody SearchResponse ajtest(@ModelAttribute Form101 a, Model model) {
+		SearchResponse res = new SearchResponse();
 		SearchResult r1 = new SearchResult();
 		String now = new Date().toString();
 		r1.col1 = "";
 		r1.col2 = a.searchType + now;
+		r1.col3 = LocalDateTime.now();
 		SearchResult r2 = new SearchResult();
 
 		r2.col1 = "";
 		r2.col2 = "bbbbb" + now;
+		r2.col3 = LocalDateTime.now();
 		SearchResult r3 = new SearchResult();
 
 		r3.col1 = "33333" + now;
 		r3.col2 = "ccccc" + now;
+		r3.col3 = LocalDateTime.now();
 
 		List<SearchResult> results = new ArrayList<>();
 		results.add(r1);
@@ -99,8 +108,10 @@ public class testController {
 		// + "*********");
 
 		// model.addAttribute("form101", a);
-		model.addAttribute("searchResults", results);
+		// model.addAttribute("searchResults", results);
+		res.resultList = results;
+		res.resultCd = "0";
 
-		return "Test2"; // Return the view name (search.html)
+		return res; // Return the view name (search.html)
 	}
 }
